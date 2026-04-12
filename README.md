@@ -1,22 +1,14 @@
 # Windows Sandbox Config
 
-A plug-and-play privacy sandbox for Windows 11. Opens an isolated throwaway environment with custom configurations. When you close it, everything inside is permanently wiped — no traces, no history, nothing.
+A custom Windows Sandbox setup that automatically pulls and runs the required setup script inside the isolated session. It handles all configuration steps without manual setup, simplifying the process and reducing redundancy.
 
 ---
 
 ## Before you move ahead 
 
-**This setup was created for (my) personal use only. If you plan to use it, review both the `.wsb` and `.ps1` files and modify them according to your needs.**
+This setup was created for (my) personal use only. If you plan to use it, review both the `.wsb` and `.ps1` files and modify them according to your needs.
 
-**The repository may change over time and could include more sandbox setups. Make sure to check the *GitHub URL* inside the `.wsb` file before running it.**
-
----
-
-## Why this repo exist
-
-This repository automates the setup of a Windows Sandbox environment. When you run `Run-MySandbox.wsb`, it automatically fetches and executes `Setup-Sandbox.ps1` inside the sandbox.
-
-The script handles all configuration and setup tasks, making sandbox setup easier and reducing redundancy.
+The repository may change over time and could include more sandbox setups. Make sure to check the *GitHub URL* inside the `.wsb` file before running it.
 
 ---
 
@@ -49,7 +41,7 @@ Close the sandbox = everything wiped forever
 
 ## Requirements
 
-- Windows 11 <small>(Pro / Enterprise / Education)</small>
+- Windows 11 (Pro / Enterprise / Education)
 - Windows Sandbox enabled on your PC
 
 **To enable Windows Sandbox:**
@@ -63,11 +55,12 @@ Close the sandbox = everything wiped forever
 
 **1. Download the `.wsb` file** to your PC
 
-**2. Double-click on it** — the sandbox will open and setup begins.
+**2. Double-click on it** — wait for a while, and the sandbox will be ready to use.
 
-`MAKE SURE` - your system can support the following sandbox configuration:
+**MAKE SURE** - your system can support the following sandbox configuration:
 - 8 GB RAM
-- 4 CPU threads
-- GPU acceleration
+- 4 vCPU threads
+
+Note: Default sandbox values are *4 GB RAM* and *2 vCPU*. These have been changed based on my needs.
 
 ---
