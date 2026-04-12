@@ -73,22 +73,49 @@ if ($Interface) {
 
 
 # -------------------------------------------------------
-# Download Proton VPN and Run Setup
+# Download Notepad++
 # -------------------------------------------------------
-Write-Step "Downloading ProtonVPN..." 
+Write-Step "Downloading Notepad++..."
+
+$NppUrl = "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.3/npp.8.9.3.Installer.x64.exe"
+$NppOut = "$env:USERPROFILE\Downloads\NppSetup.exe"
+
+curl.exe -L $NppUrl -o $NppOut
+Write-Step "Download complete. Launching Notepad++ Installer..."
+
+Start-Process $NppOut
+
+
+# -------------------------------------------------------
+# Download Proton VPN
+# -------------------------------------------------------
+Write-Step "Downloading Proton VPN..." 
 
 $ProtonUrl = "https://protonvpn.com/download/ProtonVPN_v4.3.13_x64.exe"
 $ProtonOut = "$env:USERPROFILE\Downloads\proton.exe"
 
 curl.exe -L $ProtonUrl -o $ProtonOut
-Write-Step "Download complete. Launching installer..."
+Write-Step "Download complete. Launching Proton Installer..."
 Start-Process $ProtonOut
 
 
 # -------------------------------------------------------
-# Download Brave Browser and Run Setup
+# Download qBittorrent
 # -------------------------------------------------------
-Write-Step "Downloading Brave..."
+Write-Step "Downloading qBittorrent..."
+
+$QbtUrl = "https://sourceforge.net/projects/qbittorrent/files/latest/download"
+$QbtOut = "$env:USERPROFILE\Downloads\qBittorrentSetup.exe"
+
+curl.exe -L $QbtUrl -o $QbtOut
+Write-Step "Download complete. Launching qBittorrent Installer..."
+Start-Process $QbtOut
+
+
+# -------------------------------------------------------
+# Download Brave Browser
+# -------------------------------------------------------
+Write-Step "Downloading Brave Browser..."
 
 $BraveUrl = "https://laptop-updates.brave.com/latest/winx64"
 $BraveOut = "$env:USERPROFILE\Downloads\brave.exe"
@@ -97,7 +124,7 @@ curl.exe -L $BraveUrl -o $BraveOut
 Write-Step "Download complete. Installing Brave..."
 
 Start-Process $BraveOut -Wait
-Write-Step "Brave Installed."
+Write-Step "Brave Browser Installed."
 
 
 # -------------------------------------------------------
@@ -120,15 +147,14 @@ if (Test-Path $PrefsPath) {
     Stop-Process -Name "brave" -Force
     Start-Sleep -Seconds 2
     Invoke-WebRequest -Uri $GistUrl -OutFile $PrefsPath -UseBasicParsing
-    Write-Step "    Brave preferences applied."
+    Write-Step "Brave preferences applied."
 } else {
-    Write-Step "    Preferences file not found, skipping."
+    Write-Step "Preferences file not found, skipping."
 }
 
-
 # -------------------------------------------------------
-# All Done
+# END - All Scripts Executed.
 # -------------------------------------------------------
 Write-Step "`n============================================" 
-Write-Step "  All done!"
+Write-Step "  All Scripts Executed!"
 Write-Step "============================================`n"
