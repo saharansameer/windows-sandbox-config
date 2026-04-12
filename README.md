@@ -1,24 +1,22 @@
-# 🛡️ Windows Sandbox Setup
+# Windows Sandbox Config
 
-A plug-and-play privacy sandbox for Windows 11. Opens an isolated throwaway environment with **Brave Browser** and **ProtonVPN** auto-installed on every boot. When you close it, everything inside is permanently wiped — no traces, no history, nothing.
-
----
-
-## What is Windows Sandbox?
-
-Windows Sandbox is a built-in Windows 11 feature that gives you a temporary, fully isolated copy of Windows. Think of it as a disposable PC running inside your real PC. Whatever happens inside it — browsing, downloads, installs — stays inside it. The moment you close it, it's gone forever.
+A plug-and-play privacy sandbox for Windows 11. Opens an isolated throwaway environment with custom configurations. When you close it, everything inside is permanently wiped — no traces, no history, nothing.
 
 ---
 
-## What does this repo do?
+## Before you move ahead 
 
-This repo contains a script that automatically runs inside the sandbox every time you open it. It installs:
+**This setup was created for (my) personal use only. If you plan to use it, review both the `.wsb` and `.ps1` files and modify them according to your needs.**
 
-- **Brave Browser** — privacy-focused browser with built-in ad blocking
-- **ProtonVPN** — encrypted VPN to hide your internet traffic
-- **Windows Defender update** — pulls the latest virus definitions so you're protected
+**The repository may change over time and could include more sandbox setups. Make sure to check the *GitHub URL* inside the `.wsb` file before running it.**
 
-No manual setup needed. Open the sandbox, wait a couple minutes, everything is ready.
+---
+
+## Why this repo exist
+
+This repository automates the setup of a Windows Sandbox environment. When you run `Run-MySandbox.wsb`, it automatically fetches and executes `Setup-Sandbox.ps1` inside the sandbox.
+
+The script handles all configuration and setup tasks, making sandbox setup easier and reducing redundancy.
 
 ---
 
@@ -29,18 +27,18 @@ You double-click the .wsb file on your PC
         ↓
 Windows Sandbox opens (clean, empty, isolated)
         ↓
-Sandbox fetches this script from GitHub
+Sandbox fetches the '.ps1' script from this repository
         ↓
-Script installs Brave + ProtonVPN automatically
+Script executes inside the sandbox
         ↓
-You browse privately and safely
+Sandbox is ready to use
         ↓
 Close the sandbox = everything wiped forever
 ```
 
 ---
 
-## Files in this repo
+## File Structure
 
 | File | What it does |
 |---|---|
@@ -51,7 +49,7 @@ Close the sandbox = everything wiped forever
 
 ## Requirements
 
-- Windows 11 (Pro or Enterprise)
+- Windows 11 <small>(Pro / Enterprise / Education)</small>
 - Windows Sandbox enabled on your PC
 
 **To enable Windows Sandbox:**
@@ -63,23 +61,13 @@ Close the sandbox = everything wiped forever
 
 ## Setup
 
-**1. Download the `.wsb` file** to your real PC (anywhere, your Desktop is fine)
+**1. Download the `.wsb` file** to your PC
 
-**2. Open it** — right click → Edit it in Notepad and replace this part:
-```
-YOUR_USERNAME/YOUR_REPO
-```
-with your actual GitHub username and repo name, so the URL points to your own copy of this script.
+**2. Double-click on it** — the sandbox will open and setup begins.
 
-**3. Save it and double-click it** — the sandbox will open and set itself up automatically.
+`MAKE SURE` - your system can support the following sandbox configuration:
+- 8 GB RAM
+- 4 CPU threads
+- GPU acceleration
 
 ---
-
-## Security
-
-- The sandbox is **completely isolated** from your real PC
-- It cannot access your files, history, passwords, or anything on your host machine
-- Malware inside the sandbox is trapped — it cannot escape to your real system
-- Closing the sandbox **permanently destroys** everything inside it
-- The `.wsb` file on your PC contains no sensitive information — just a public GitHub URL
-
