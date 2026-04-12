@@ -3,12 +3,18 @@
 #  Hosted on GitHub - fetched and run on sandbox boot
 # ============================================================
 
-$ErrorActionPreference = "Stop"
+# Relaunch self in a visible window
+if (-not $env:SANDBOX_VISIBLE) {
+    $env:SANDBOX_VISIBLE = "1"
+    Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -NoExit -File `"$PSCommandPath`"" -WindowStyle Normal
+    exit
+}
+
 $TempDir = "$env:TEMP\SandboxSetup"
 New-Item -ItemType Directory -Force -Path $TempDir | Out-Null
 
 function Write-Step($msg) {
-    Write-Host "`n==> $msg" -ForegroundColor Cyan
+    Write-Host "`n==> $msg" -ForegroundColor Green
 }
 
 # Bypass execution policy in PowerShell
@@ -47,7 +53,7 @@ Set-ItemProperty -Path "$CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Va
 Stop-Process -Name explorer -Force
 Start-Process explorer
 
-Write-Host "Settings applied." -ForegroundColor Green
+Write-Step "Settings applied."
 
 
 # -------------------------------------------------------
@@ -62,34 +68,36 @@ if ($Interface) {
         -InterfaceIndex $Interface.InterfaceIndex `
         -ServerAddresses ("8.8.8.8","8.8.4.4")
 
-    Write-Host "DNS set to 8.8.8.8 / 8.8.4.4" -ForegroundColor Green
+    Write-Step "DNS set to 8.8.8.8 / 8.8.4.4"
 }
 
 
 # -------------------------------------------------------
 # Download Proton VPN and Run Setup
 # -------------------------------------------------------
-Write-Host "Downloading ProtonVPN..." 
+Write-Step "Downloading ProtonVPN..." 
 
 $ProtonUrl = "https://protonvpn.com/download/ProtonVPN_v4.3.13_x64.exe"
 $ProtonOut = "$env:USERPROFILE\Downloads\proton.exe"
 
 curl.exe -L $ProtonUrl -o $ProtonOut
-Write-Host "Download complete. Launching installer..." -ForegroundColor Green
+Write-Step "Download complete. Launching installer..."
 Start-Process $ProtonOut
 
 
 # -------------------------------------------------------
 # Download Brave Browser and Run Setup
 # -------------------------------------------------------
-Write-Host "Downloading Brave..."
+Write-Step "Downloading Brave..."
 
 $BraveUrl = "https://laptop-updates.brave.com/latest/winx64"
 $BraveOut = "$env:USERPROFILE\Downloads\brave.exe"
 
 curl.exe -L $BraveUrl -o $BraveOut
-Write-Host "Download complete. Launching installer..." -ForegroundColor Green
+Write-Step "Download complete. Installing Brave..."
+
 Start-Process $BraveOut -Wait
+Write-Step "Brave Installed."
 
 
 # -------------------------------------------------------
@@ -111,16 +119,16 @@ while (-not (Test-Path $PrefsPath) -and $elapsed -lt $timeout) {
 if (Test-Path $PrefsPath) {
     Stop-Process -Name "brave" -Force
     Start-Sleep -Seconds 2
-    Download-File $GistUrl $PrefsPath
-    Write-Host "    Brave preferences applied." -ForegroundColor Green
+    Invoke-WebRequest -Uri $GistUrl -OutFile $PrefsPath -UseBasicParsing
+    Write-Step "    Brave preferences applied."
 } else {
-    Write-Host "    Preferences file not found, skipping." -ForegroundColor Yellow
+    Write-Step "    Preferences file not found, skipping."
 }
 
 
 # -------------------------------------------------------
 # All Done
 # -------------------------------------------------------
-Write-Host "`n============================================" -ForegroundColor Green
-Write-Host "  All done!" -ForegroundColor Green
-Write-Host "============================================`n" -ForegroundColor Green
+Write-Step "`n============================================" 
+Write-Step "  All done!"
+Write-Step "============================================`n"
