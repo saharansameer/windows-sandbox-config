@@ -1,0 +1,30 @@
+<Configuration>
+
+  <!-- Allocate 4 CPU threads -->
+  <vCPUs>4</vCPUs>
+
+  <!-- Allocate 8GB RAM -->
+  <MemoryInMB>8192</MemoryInMB>
+
+  <!-- Options for improved security -->
+	<VideoInput>Disable</VideoInput>
+	<AudioInput>Disable</AudioInput>
+	<PrinterRedirection>Disable</PrinterRedirection>
+
+  <!-- Internet access so sandbox can reach GitHub -->
+  <Networking>Enable</Networking>
+
+  <!-- GPU acceleration -->
+  <vGPU>Enable</vGPU>
+
+  <!-- NO MappedFolders = zero connection to your host machine -->
+
+  <LogonCommand>
+    <Command>cmd.exe /c "powershell.exe -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope CurrentUser -Force; Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/saharansameer/sandbox-config/main/Setup-Sandbox.ps1' -OutFile '%TEMP%\setup.ps1' -UseBasicParsing; powershell.exe -ExecutionPolicy Bypass -File '%TEMP%\setup.ps1'""</Command>
+  </LogonCommand>
+
+  <!-- Make sure to change GitHub Username and Repository in the <Command> right after -Uri (Line 12)
+  Update:- https://raw.githubusercontent.com/USER_NAME/REPO/main/Setup-Sandbox.ps1
+  -->
+
+</Configuration>
