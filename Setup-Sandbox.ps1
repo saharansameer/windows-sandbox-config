@@ -67,6 +67,19 @@ if ($Interface) {
 
 
 # -------------------------------------------------------
+# Download Proton VPN and Run Setup
+# -------------------------------------------------------
+Write-Host "Downloading ProtonVPN..." 
+
+$ProtonUrl = "https://protonvpn.com/download/ProtonVPN_v4.3.13_x64.exe"
+$ProtonOut = "$env:USERPROFILE\Downloads\proton.exe"
+
+curl.exe -L $ProtonUrl -o $ProtonOut
+Write-Host "Download complete. Launching installer..." -ForegroundColor Green
+Start-Process $ProtonOut
+
+
+# -------------------------------------------------------
 # Download Brave Browser and Run Setup
 # -------------------------------------------------------
 Write-Host "Downloading Brave..."
@@ -76,7 +89,7 @@ $BraveOut = "$env:USERPROFILE\Downloads\brave.exe"
 
 curl.exe -L $BraveUrl -o $BraveOut
 Write-Host "Download complete. Launching installer..." -ForegroundColor Green
-Start-Process $BraveOut
+Start-Process $BraveOut -Wait
 
 
 # -------------------------------------------------------
@@ -103,19 +116,6 @@ if (Test-Path $PrefsPath) {
 } else {
     Write-Host "    Preferences file not found, skipping." -ForegroundColor Yellow
 }
-
-
-# -------------------------------------------------------
-# Download Proton VPN and Run Setup
-# -------------------------------------------------------
-Write-Host "Downloading ProtonVPN..." 
-
-$ProtonUrl = "https://protonvpn.com/download/ProtonVPN_v4.3.13_x64.exe"
-$ProtonOut = "$env:USERPROFILE\Downloads\proton.exe"
-
-curl.exe -L $ProtonUrl -o $ProtonOut
-Write-Host "Download complete. Launching installer..." -ForegroundColor Green
-Start-Process $ProtonOut
 
 
 # -------------------------------------------------------
