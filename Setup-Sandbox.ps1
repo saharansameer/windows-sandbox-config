@@ -1,6 +1,26 @@
 # ============================================================
-#  Windows Sandbox PowerShell Script
-#  Hosted on GitHub - fetched and run on sandbox boot
+#  Author      : Sameer Saharan (github.com/saharansameer)
+#
+#  Description : Automated setup script for Windows Sandbox.
+#                Runs on sandbox boot to configure system settings
+#                and set up a clean, usable isolated environment.
+#
+#  Actions:
+#    - Applies system settings
+#    - Downloads and extracts portable apps to Program Files
+#    - Downloads and launches installers for system-level apps
+#    - Creates desktop shortcuts for all installed apps
+#
+#  Installs:
+#    - Notepad++     (Portable)  - Text Editor
+#    - VLC           (Portable)  - Media Player
+#    - qBittorrent   (Installer) - Torrent Client
+#    - Proton VPN    (Installer) - VPN Client
+#    - Brave Browser (Installer) - Web Browser
+# ============================================================
+
+# ============================================================
+# START
 # ============================================================
 
 # Relaunch self in a visible window
@@ -10,18 +30,22 @@ if (-not $env:SANDBOX_VISIBLE) {
     exit
 }
 
-$TempDir = "$env:TEMP\SandboxSetup"
-New-Item -ItemType Directory -Force -Path $TempDir | Out-Null
-
+# Utilities
 function Write-Step($msg) {
     Write-Host "`n==> $msg" -ForegroundColor Green
 }
+
+# Folder Path
+$ProgramFiles = "C:\Program Files"
+$Downloads = "$env:USERPROFILE\Downloads"
+$Desktop = "$env:USERPROFILE\Desktop"
+
 
 # Bypass execution policy in PowerShell
 Set-ExecutionPolicy Bypass -Scope CurrentUser -Force
 
 # -------------------------------------------------------
-# System Settings
+# Update System Settings
 # -------------------------------------------------------
 Write-Step "Applying system settings..."
 
@@ -72,66 +96,41 @@ if ($Interface) {
 }
 
 
-# -------------------------------------------------------
-# Download Proton VPN
-# -------------------------------------------------------
-Write-Step "Downloading Proton VPN..." 
+# ---------------------------------------------------------
+# Download [Proton VPN, qBittorrent] and Launch Installers
+# ---------------------------------------------------------
+$Installers = @(
+    @{ Name = "Proton VPN"; Url = "https://protonvpn.com/download/ProtonVPN_v4.3.13_x64.exe"; Out = "$Downloads\proton.exe" },
+    @{ Name = "qBittorrent"; Url = "https://sourceforge.net/projects/qbittorrent/files/latest/download"; Out = "$Downloads\qBittorrentSetup.exe" }
+)
 
-$ProtonUrl = "https://protonvpn.com/download/ProtonVPN_v4.3.13_x64.exe"
-$ProtonOut = "$env:USERPROFILE\Downloads\proton.exe"
-
-curl.exe -L $ProtonUrl -o $ProtonOut
-Write-Step "Download complete. Launching Proton Installer..."
-Start-Process $ProtonOut
-
-
-# -------------------------------------------------------
-# Download qBittorrent
-# -------------------------------------------------------
-Write-Step "Downloading qBittorrent..."
-
-$QbtUrl = "https://sourceforge.net/projects/qbittorrent/files/latest/download"
-$QbtOut = "$env:USERPROFILE\Downloads\qBittorrentSetup.exe"
-
-curl.exe -L $QbtUrl -o $QbtOut
-Write-Step "Download complete. Launching qBittorrent Installer..."
-Start-Process $QbtOut
+foreach ($App in $Installers) {
+    Write-Step "Downloading $($App.Name)..."
+    curl.exe -L $App.Url -o $App.Out
+    Write-Step "Download complete. Launching $($App.Name) installer..."
+    Start-Process $App.Out
+}
 
 
 # -------------------------------------------------------
-# Download Notepad++ (Text Editor)
+# Download [Notepad++, VLC] and Extract Zip Files
 # -------------------------------------------------------
-Write-Step "Downloading Notepad++..."
+$NppDir = "$ProgramFiles\NotepadPlusPlus"
+$VlcDir = "$ProgramFiles\VLC"
 
-$NppUrl = "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.3/npp.8.9.3.portable.x64.zip"
-$NppZip = "$env:USERPROFILE\Downloads\NppPortable.zip"
-$NppDir = "C:\Program Files\NotepadPlusPlus"
+$PortableApps = @(
+    @{ Name = "Notepad++"; Url = "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.3/npp.8.9.3.portable.x64.zip"; Zip = "$Downloads\NppPortable.zip"; Dir = $NppDir },
+    @{ Name = "VLC"; Url = "https://get.videolan.org/vlc/3.0.23/win64/vlc-3.0.23-win64.zip"; Zip = "$Downloads\VlcPortable.zip"; Dir = $VlcDir }
+)
 
-curl.exe -L $NppUrl -o $NppZip
-Write-Step "Download complete. Extracting Notepad++..."
-
-Expand-Archive -Path $NppZip -DestinationPath $NppDir -Force
-Write-Step "Notepad++ extracted to $NppDir"
-
-Remove-Item $NppZip -Force
-
-
-# -------------------------------------------------------
-# Download VLC (Media Player)
-# -------------------------------------------------------
-Write-Step "Downloading VLC..."
-
-$VlcUrl = "https://get.videolan.org/vlc/3.0.23/win64/vlc-3.0.23-win64.zip"
-$VlcZip = "$env:USERPROFILE\Downloads\VlcPortable.zip"
-$VlcDir = "C:\Program Files\VLC"
-
-curl.exe -L $VlcUrl -o $VlcZip
-Write-Step "Download complete. Extracting VLC..."
-
-Expand-Archive -Path $VlcZip -DestinationPath $VlcDir -Force
-Write-Step "VLC extracted to $VlcDir"
-
-Remove-Item $VlcZip -Force
+foreach ($App in $PortableApps) {
+    Write-Step "Downloading $($App.Name)..."
+    curl.exe -L $App.Url -o $App.Zip
+    Write-Step "Download complete. Extracting $($App.Name)..."
+    Expand-Archive -Path $App.Zip -DestinationPath $App.Dir -Force
+    Write-Step "$($App.Name) extracted to $($App.Dir)"
+    Remove-Item $App.Zip -Force
+}
 
 
 # -------------------------------------------------------
@@ -140,7 +139,7 @@ Remove-Item $VlcZip -Force
 Write-Step "Downloading Brave Browser..."
 
 $BraveUrl = "https://laptop-updates.brave.com/latest/winx64"
-$BraveOut = "$env:USERPROFILE\Downloads\brave.exe"
+$BraveOut = "$Downloads\brave.exe"
 
 curl.exe -L $BraveUrl -o $BraveOut
 Write-Step "Download complete. Installing Brave..."
@@ -174,9 +173,30 @@ if (Test-Path $PrefsPath) {
     Write-Step "Preferences file not found, skipping."
 }
 
+
 # -------------------------------------------------------
-# END - All Scripts Executed.
+# Create Desktop Shortcuts
 # -------------------------------------------------------
+$WshShell = New-Object -ComObject WScript.Shell
+
+$Shortcuts = @(
+    @{ Name = "Notepad++";   Exe = "$NppDir\notepad++.exe" },
+    @{ Name = "VLC";         Exe = "$VlcDir\vlc-3.0.23\vlc.exe" },
+    @{ Name = "qBittorrent"; Exe = "$ProgramFiles\qBittorrent\qbittorrent.exe" }
+)
+
+foreach ($App in $Shortcuts) {
+    $Shortcut = $WshShell.CreateShortcut("$Desktop\$($App.Name).lnk")
+    $Shortcut.TargetPath = $App.Exe
+    $Shortcut.Save()
+    Write-Step "Desktop Shortcut created for $($App.Name)"
+}
+
+# Final Execution
 Write-Step "`n============================================" 
 Write-Step "  All Scripts Executed!"
 Write-Step "============================================`n"
+
+# ============================================================
+# END
+# ============================================================

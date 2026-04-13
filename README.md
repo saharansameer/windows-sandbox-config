@@ -1,66 +1,60 @@
 # Windows Sandbox Config
 
-A custom Windows Sandbox setup that automatically pulls and runs the required setup script inside the isolated session. It handles all configuration steps without manual setup, simplifying the process and reducing redundancy.
-
----
-
-## Before you move ahead 
-
-This setup was created for (my) personal use only. If you plan to use it, review both the `.wsb` and `.ps1` files and modify them according to your needs.
-
-The repository may change over time and could include more sandbox setups. Make sure to check the *GitHub URL* inside the `.wsb` file before running it.
+A Windows Sandbox configuration that retrieves and executes a PowerShell script inside Windows Sandbox to convert the instance into a preconfigured working environment.
 
 ---
 
 ## How it works
 
 ```
-You double-click the .wsb file on your PC
+Double-click the .wsb file on your PC
         ↓
 Windows Sandbox opens (clean, empty, isolated)
         ↓
 Sandbox fetches the '.ps1' script from this repository
         ↓
-Script executes inside the sandbox
+Script start executing inside the sandbox
+        ↓
+Wait (few moments) for the script to finish
         ↓
 Sandbox is ready to use
-        ↓
-Close the sandbox = everything wiped forever
 ```
 
 ---
 
-## File Structure
+## Files
 
-| File | What it does |
+| Name | Description |
 |---|---|
-| `Setup-Sandbox.ps1` | The script that runs inside the sandbox and installs everything |
-| `Run-MySandbox.wsb` | The config file you double-click on your PC to launch the sandbox |
-
----
-
-## Requirements
-
-- Windows 11 (Pro / Enterprise / Education)
-- Windows Sandbox enabled on your PC
-
-**To enable Windows Sandbox:**
-1. Open Start and search for *"Turn Windows features on or off"*
-2. Scroll down and check **Windows Sandbox**
-3. Click OK and restart your PC
+| `Setup-Sandbox.ps1` | Runs inside the sandbox. Handles configuration and installs. |
+| `Run-MySandbox.wsb` | The config file you double-click on your PC to launch the sandbox. |
 
 ---
 
 ## Setup
 
-**1. Download the `.wsb` file** to your PC
+**Step 1: Check System Requirements**
 
-**2. Double-click on it** — wait for a while, and the sandbox will be ready to use.
+You must have one of the following editions of **Windows 11**:
+- Pro
+- Enterprise
+- Education
 
-**MAKE SURE** - your system can support the following sandbox configuration:
-- 8 GB RAM
+Sandbox is configured to use the following resources, make sure your PC can support them:
+- 8 GB RAM (8192 *MegaBytes*)
 - 4 vCPU threads
 
-Note: Default sandbox values are *4 GB RAM* and *2 vCPU*. These have been changed based on my needs.
+> The default sandbox allocates 4 GB RAM and 2 vCPU. This config overrides those defaults.
+
+**Step 2: Enable Windows Sandbox**
+1. Open Start and search for *"Turn Windows features on or off"*
+2. Scroll down and check **Windows Sandbox**
+3. Click OK and restart your PC
+
+**Step 3: Run**
+> **Note:** Review both the `.wsb` and `.ps1` files before moving forward, and modify them to fit your needs.
+
+1. Download the `.wsb` file to your PC
+2. Double-click it and wait for the sandbox to boot
 
 ---
