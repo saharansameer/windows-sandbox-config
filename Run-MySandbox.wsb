@@ -1,9 +1,33 @@
+<!-- ============================================================
+ Author      : Sameer Saharan (github.com/saharansameer)
+
+ Description : Windows Sandbox (.wsb) configuration used to
+               launch a preconfigured isolated environment with
+               automatic setup execution on startup.
+
+ Actions:
+   - Apply sandbox configuration
+   - Retrieve and Execute 'Setup-Sandbox.ps1' via PowerShell
+
+ Resources:
+   - CPU         : 4 (vCPUs)
+   - Memory      : 8 GB (8192 MegaBytes)
+   - GPU         : Enabled (hardware acceleration)
+
+ Settings:
+   - Networking          : Enabled
+   - Video Input         : Disabled
+   - Audio Input         : Disabled
+   - Printer Redirection : Disabled
+   - Host File Sharing   : Disabled
+============================================================ -->
+
 <Configuration>
 
-  <!-- Allocate upto 4 CPU threads -->
+  <!-- Allocate 4 vCPU threads -->
   <vCPUs>4</vCPUs>
 
-  <!-- Allocate upto 8GB RAM -->
+  <!-- Allocate 8GB RAM -->
   <MemoryInMB>8192</MemoryInMB>
 
   <!-- Internet access -->
@@ -23,6 +47,6 @@
     <Command>cmd.exe /c "powershell.exe -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope CurrentUser -Force; Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/saharansameer/windows-sandbox-config/main/Setup-Sandbox.ps1' -OutFile '%TEMP%\setup.ps1' -UseBasicParsing; powershell.exe -ExecutionPolicy Bypass -File '%TEMP%\setup.ps1'""</Command>
   </LogonCommand>
 
-  <!-- MAKE SURE to update the GitHub URL on Line-23 (above). It currently points to the 'Setup-Sandbox.ps1' file in the 'windows-sandbox-config' repository, created by 'saharansameer' -->
+  <!-- MAKE SURE to update the GitHub URL on Line-47 (above). It currently points to the 'Setup-Sandbox.ps1' file in the 'windows-sandbox-config' repository, created by 'saharansameer' -->
 
 </Configuration>
