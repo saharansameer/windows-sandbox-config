@@ -73,20 +73,6 @@ if ($Interface) {
 
 
 # -------------------------------------------------------
-# Download Notepad++
-# -------------------------------------------------------
-Write-Step "Downloading Notepad++..."
-
-$NppUrl = "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.3/npp.8.9.3.Installer.x64.exe"
-$NppOut = "$env:USERPROFILE\Downloads\NppSetup.exe"
-
-curl.exe -L $NppUrl -o $NppOut
-Write-Step "Download complete. Launching Notepad++ Installer..."
-
-Start-Process $NppOut
-
-
-# -------------------------------------------------------
 # Download Proton VPN
 # -------------------------------------------------------
 Write-Step "Downloading Proton VPN..." 
@@ -113,6 +99,42 @@ Start-Process $QbtOut
 
 
 # -------------------------------------------------------
+# Download Notepad++ (Text Editor)
+# -------------------------------------------------------
+Write-Step "Downloading Notepad++..."
+
+$NppUrl = "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.3/npp.8.9.3.portable.x64.zip"
+$NppZip = "$env:USERPROFILE\Downloads\NppPortable.zip"
+$NppDir = "C:\Program Files\NotepadPlusPlus"
+
+curl.exe -L $NppUrl -o $NppZip
+Write-Step "Download complete. Extracting Notepad++..."
+
+Expand-Archive -Path $NppZip -DestinationPath $NppDir -Force
+Write-Step "Notepad++ extracted to $NppDir"
+
+Remove-Item $NppZip -Force
+
+
+# -------------------------------------------------------
+# Download VLC (Media Player)
+# -------------------------------------------------------
+Write-Step "Downloading VLC..."
+
+$VlcUrl = "https://get.videolan.org/vlc/3.0.23/win64/vlc-3.0.23-win64.zip"
+$VlcZip = "$env:USERPROFILE\Downloads\VlcPortable.zip"
+$VlcDir = "C:\Program Files\VLC"
+
+curl.exe -L $VlcUrl -o $VlcZip
+Write-Step "Download complete. Extracting VLC..."
+
+Expand-Archive -Path $VlcZip -DestinationPath $VlcDir -Force
+Write-Step "VLC extracted to $VlcDir"
+
+Remove-Item $VlcZip -Force
+
+
+# -------------------------------------------------------
 # Download Brave Browser
 # -------------------------------------------------------
 Write-Step "Downloading Brave Browser..."
@@ -130,7 +152,7 @@ Write-Step "Brave Browser Installed."
 # -------------------------------------------------------
 # Overwrite Brave Preferences
 # -------------------------------------------------------
-Write-Step "    Applying Brave preferences..."
+Write-Step "Applying Brave preferences..."
  
 $PrefsPath = "$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\Default\Preferences"
 $GistUrl = "https://gist.githubusercontent.com/saharansameer/b57fbd4bc2bcf9e854560861178e87a7/raw/151b11a9da81a88f2c1cf1f2ace2764a8111a211/BravePreferences"
