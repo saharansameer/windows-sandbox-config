@@ -12,11 +12,11 @@
 #    - Creates desktop shortcuts for all installed apps
 #
 #  Installs:
-#    - Notepad++     (Portable)  - Text Editor
-#    - VLC           (Portable)  - Media Player
-#    - qBittorrent   (Installer) - Torrent Client
-#    - Proton VPN    (Installer) - VPN Client
-#    - Brave Browser (Installer) - Web Browser
+#    1. Proton VPN              - VPN Client
+#    2. qBittorrent             - Torrent Client
+#    3. Notepad++               - Text Editor
+#    4. VLC                     - Media Player
+#    5. Brave Browser           - Web Browser
 # ============================================================
 
 # ============================================================
@@ -39,7 +39,6 @@ function Write-Step($msg) {
 $ProgramFiles = "C:\Program Files"
 $Downloads = "$env:USERPROFILE\Downloads"
 $Desktop = "$env:USERPROFILE\Desktop"
-
 
 # Bypass execution policy in PowerShell
 Set-ExecutionPolicy Bypass -Scope CurrentUser -Force
@@ -79,7 +78,6 @@ Start-Process explorer
 
 Write-Step "Settings applied."
 
-
 # -------------------------------------------------------
 # Configure DNS - Google 8.8.8.8 (Unencrypted)
 # -------------------------------------------------------
@@ -95,84 +93,79 @@ if ($Interface) {
     Write-Step "DNS set to 8.8.8.8 / 8.8.4.4"
 }
 
-
 # ---------------------------------------------------------
-# Download [Proton VPN, qBittorrent] and Launch Installers
+# Download and Install Programs
 # ---------------------------------------------------------
-$Installers = @(
-    @{ Name = "Proton VPN"; Url = "https://protonvpn.com/download/ProtonVPN_v4.3.13_x64.exe"; Out = "$Downloads\proton.exe" },
-    @{ Name = "qBittorrent"; Url = "https://sourceforge.net/projects/qbittorrent/files/latest/download"; Out = "$Downloads\qBittorrentSetup.exe" }
-)
 
-foreach ($App in $Installers) {
-    Write-Step "Downloading $($App.Name)..."
-    curl.exe -L $App.Url -o $App.Out
-    Write-Step "Download complete. Launching $($App.Name) installer..."
-    Start-Process $App.Out
+# Load manifest from remote JSON
+Write-Step "Fetching manifest..."
+$AppsList = Invoke-RestMethod -Uri "https://gist.githubusercontent.com/saharansameer/ee8a7fe89a6fb98d970a5d13588e1bdd/raw/2eb300ec09a6c9f38728a4daebbbeedba086501f/programs.json"
+Write-Step "Manifest loaded."
+
+# Install each app based on method defined in manifest
+foreach ($App in $AppsList) {
+    # Handle EXE Installers
+     if ($App.Method -eq "INSTALLER") {
+        $InstallerOutPath = "$Downloads\$($App.Name).exe"
+
+        # Download installer
+        Write-Step "Downloading $($App.Name)..."
+        curl.exe -L $App.DownloadUrl -o $InstallerOutPath
+        Write-Step "Download complete. Launching $($App.Name) Installer..."
+
+        # Run installer, optionally wait for completion
+        if ($App.Wait) {
+            Write-Step "Waiting for $($App.Name) installation to complete..."
+            Start-Process $InstallerOutPath -Wait
+        } else {
+            Start-Process $InstallerOutPath
+        }
+    }
+    # Handle Zip Extraction
+    elseif ($App.Method -eq "PORTABLE") {
+        $ZipOutPath = "$Downloads\$($App.Name).zip"
+        $ZipExtractPath = "$ProgramFiles\$($App.Name)"
+
+        # Download Zip 
+        Write-Step "Downloading $($App.Name)..."
+        curl.exe -L $App.DownloadUrl -o $ZipOutPath
+
+        # Extract Zip to specified path
+        Write-Step "Download complete. Extracting $($App.Name)..."
+        Expand-Archive -Path $ZipOutPath -DestinationPath $ZipExtractPath -Force
+
+        # Clean-up after extraction
+        Write-Step "$($App.Name) extracted to $($ZipExtractPath)"
+        Remove-Item $ZipOutPath -Force
+    }
 }
-
-
-# -------------------------------------------------------
-# Download [Notepad++, VLC] and Extract Zip Files
-# -------------------------------------------------------
-$NppDir = "$ProgramFiles\NotepadPlusPlus"
-$VlcDir = "$ProgramFiles\VLC"
-
-$PortableApps = @(
-    @{ Name = "Notepad++"; Url = "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.3/npp.8.9.3.portable.x64.zip"; Zip = "$Downloads\NppPortable.zip"; Dir = $NppDir },
-    @{ Name = "VLC"; Url = "https://get.videolan.org/vlc/3.0.23/win64/vlc-3.0.23-win64.zip"; Zip = "$Downloads\VlcPortable.zip"; Dir = $VlcDir }
-)
-
-foreach ($App in $PortableApps) {
-    Write-Step "Downloading $($App.Name)..."
-    curl.exe -L $App.Url -o $App.Zip
-    Write-Step "Download complete. Extracting $($App.Name)..."
-    Expand-Archive -Path $App.Zip -DestinationPath $App.Dir -Force
-    Write-Step "$($App.Name) extracted to $($App.Dir)"
-    Remove-Item $App.Zip -Force
-}
-
-
-# -------------------------------------------------------
-# Download Brave Browser
-# -------------------------------------------------------
-Write-Step "Downloading Brave Browser..."
-
-$BraveUrl = "https://laptop-updates.brave.com/latest/winx64"
-$BraveOut = "$Downloads\brave.exe"
-
-curl.exe -L $BraveUrl -o $BraveOut
-Write-Step "Download complete. Installing Brave..."
-
-Start-Process $BraveOut -Wait
-Write-Step "Brave Browser Installed."
-
 
 # -------------------------------------------------------
 # Overwrite Brave Preferences
 # -------------------------------------------------------
-Write-Step "Applying Brave preferences..."
+& {
+    Write-Step "Applying Brave preferences..."
  
-$PrefsPath = "$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\Default\Preferences"
-$GistUrl = "https://gist.githubusercontent.com/saharansameer/b57fbd4bc2bcf9e854560861178e87a7/raw/151b11a9da81a88f2c1cf1f2ace2764a8111a211/BravePreferences"
- 
-# Wait for Brave to create the profile folder
-$timeout = 30
-$elapsed = 0
-while (-not (Test-Path $PrefsPath) -and $elapsed -lt $timeout) {
-    Start-Sleep -Seconds 2
-    $elapsed += 2
+    $PrefsPath = "$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\Default\Preferences"
+    $GistUrl = "https://gist.githubusercontent.com/saharansameer/b57fbd4bc2bcf9e854560861178e87a7/raw/151b11a9da81a88f2c1cf1f2ace2764a8111a211/BravePreferences"
+    
+    # Wait for Brave to create the profile folder
+    $timeout = 60
+    $elapsed = 0
+    while (-not (Test-Path $PrefsPath) -and $elapsed -lt $timeout) {
+        Start-Sleep -Seconds 2
+        $elapsed += 2
+    }
+    
+    if (Test-Path $PrefsPath) {
+        Stop-Process -Name "brave" -Force
+        Start-Sleep -Seconds 2
+        Invoke-WebRequest -Uri $GistUrl -OutFile $PrefsPath -UseBasicParsing
+        Write-Step "Brave preferences applied."
+    } else {
+        Write-Step "Preferences file not found, skipping."
+    }
 }
- 
-if (Test-Path $PrefsPath) {
-    Stop-Process -Name "brave" -Force
-    Start-Sleep -Seconds 2
-    Invoke-WebRequest -Uri $GistUrl -OutFile $PrefsPath -UseBasicParsing
-    Write-Step "Brave preferences applied."
-} else {
-    Write-Step "Preferences file not found, skipping."
-}
-
 
 # -------------------------------------------------------
 # Create Desktop Shortcuts
@@ -180,8 +173,8 @@ if (Test-Path $PrefsPath) {
 $WshShell = New-Object -ComObject WScript.Shell
 
 $Shortcuts = @(
-    @{ Name = "Notepad++";   Exe = "$NppDir\notepad++.exe" },
-    @{ Name = "VLC";         Exe = "$VlcDir\vlc-3.0.23\vlc.exe" },
+    @{ Name = "Notepad++";   Exe = "$ProgramFiles\NotepadPlusPlus\notepad++.exe" },
+    @{ Name = "VLC";         Exe = "$ProgramFiles\VLC\vlc-3.0.23\vlc.exe" },
     @{ Name = "qBittorrent"; Exe = "$ProgramFiles\qBittorrent\qbittorrent.exe" }
 )
 
@@ -194,7 +187,7 @@ foreach ($App in $Shortcuts) {
 
 # Final Execution
 Write-Step "`n============================================" 
-Write-Step "  All Scripts Executed!"
+Write-Step "  All Done!"
 Write-Step "============================================`n"
 
 # ============================================================

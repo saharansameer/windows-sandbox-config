@@ -7,11 +7,11 @@ A Windows Sandbox configuration that retrieves and executes a PowerShell script 
 ## How it works
 
 ```
-Double-click the .wsb file on your PC
+Double-click the 'Sanbox.wsb' file on your PC
         ↓
 Windows Sandbox opens (clean, empty, isolated)
         ↓
-Sandbox fetches the '.ps1' script from this repository
+Sandbox fetches the 'Setup.ps1' script from this repository
         ↓
 Script start executing inside the sandbox
         ↓
@@ -26,8 +26,8 @@ Sandbox is ready to use
 
 | Name | Description |
 |---|---|
-| `Setup-Sandbox.ps1` | Runs inside the sandbox. Handles configuration and installs. |
-| `Run-MySandbox.wsb` | The config file you double-click on your PC to launch the sandbox. |
+| `Setup.ps1` | Runs inside the sandbox. Handles configuration and installs. |
+| `Sandbox.wsb` | The config file you double-click on your PC to launch the sandbox. |
 
 ---
 
@@ -52,9 +52,7 @@ Sandbox is configured to use the following resources, make sure your PC can supp
 3. Click OK and restart your PC
 
 **Step 3: Run**
-> **Note:** Review both the `.wsb` and `.ps1` files before moving forward, and modify them to fit your needs.
-
-1. Download the `.wsb` file to your PC
+1. Download the [`Sandbox.wsb`](https://github.com/saharansameer/windows-sandbox-config/releases/latest/download/Sandbox.wsb) file to your PC
 2. Double-click it and wait for the sandbox to boot
-
+> File can also be downloaded by clicking here: [Download](https://github.com/saharansameer/windows-sandbox-config/releases/latest/download/Sandbox.wsb)
 ---

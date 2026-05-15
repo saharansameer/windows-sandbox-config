@@ -7,7 +7,7 @@
 
  Actions:
    - Apply sandbox configuration
-   - Retrieve and Execute 'Setup-Sandbox.ps1' via PowerShell
+   - Retrieve and Execute 'Setup.ps1' via PowerShell
 
  Resources:
    - CPU         : 4 (vCPUs)
@@ -41,12 +41,10 @@
 	<AudioInput>Disable</AudioInput>
 	<PrinterRedirection>Disable</PrinterRedirection>
 
-  <!-- NO MappedFolders = zero connection to your host machine -->
+  <!-- NO MappedFolders, means zero connection to your host machine -->
 
   <LogonCommand>
-    <Command>cmd.exe /c "powershell.exe -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope CurrentUser -Force; Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/saharansameer/windows-sandbox-config/main/Setup-Sandbox.ps1' -OutFile '%TEMP%\setup.ps1' -UseBasicParsing; powershell.exe -ExecutionPolicy Bypass -File '%TEMP%\setup.ps1'""</Command>
+    <Command>cmd.exe /c "powershell.exe -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope CurrentUser -Force; Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/saharansameer/windows-sandbox-config/main/Setup.ps1' -OutFile '%TEMP%\setup.ps1' -UseBasicParsing; powershell.exe -ExecutionPolicy Bypass -File '%TEMP%\setup.ps1'""</Command>
   </LogonCommand>
-
-  <!-- MAKE SURE to update the GitHub URL on Line-47 (above). It currently points to the 'Setup-Sandbox.ps1' file in the 'windows-sandbox-config' repository, created by 'saharansameer' -->
 
 </Configuration>
